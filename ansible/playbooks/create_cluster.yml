@@ -1,0 +1,38 @@
+---
+- name: Create Kubernetes Cluster with kops
+  hosts: kubernetes_master
+  become: yes
+  vars:
+    cluster_name: cluster.k8s.local
+    state_store: s3://your-kops-state-store # You'll need to create this S3 bucket
+  tasks:
+    - name: Create state store bucket
+      command: aws s3 mb {{ state_store }}
+      ignore_errors: yes # In case bucket already exists
+
+    - name: Export KOPS_STATE_STORE
+      shell: export KOPS_STATE_STORE={{ state_store }}
+      
+    - name: Create cluster configuration
+      command: >
+        kops create cluster 
+        --name={{ cluster_name }} 
+        --zones={{ availability_zones | join(',') }} 
+        --node-count=2 
+        --master-zones={{ availability_zones[0] }}
+        --node-size=t3.medium 
+        --master-size=t3.medium 
+        --yes
+      args:
+        creates: ~/.kube/config
+      environment:
+        KOPS_STATE_STORE: "{{ state_store }}"
+
+    - name: Wait for cluster to be ready
+      command: kops validate cluster --name={{ cluster_name }}
+      register: result
+      until: result.rc == 0
+      retries: 20
+      delay: 60
+      environment:
+        KOPS_STATE_STORE: "{{ state_store }}"

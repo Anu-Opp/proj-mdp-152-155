@@ -1,0 +1,13 @@
+---
+- name: Delete Kubernetes Cluster
+  hosts: kubernetes_master
+  become: yes
+  vars:
+    cluster_name: cluster.k8s.local
+    state_store: s3://your-kops-state-store
+  tasks:
+    - name: Delete cluster
+      command: kops delete cluster --name={{ cluster_name }} --yes
+      environment:
+        KOPS_STATE_STORE: "{{ state_store }}"
+      
