@@ -11,5 +11,14 @@ variable "availability_zones" {
 
 variable "instance_type" {
   description = "EC2 instance type for Kubernetes nodes"
-  default     = "t3.medium"
+  default     = "t2.medium"
+}
+variable "key_name" {
+  description = "SSH Key Name"
+  default     = "tom.pem"
+}
+
+variable "dns_zone_name" {
+  description = "DNS zone for KOPS cluster"
+  default     = "dev.k8s.local"  # <<< personalize this if needed
 }

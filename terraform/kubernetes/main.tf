@@ -2,64 +2,80 @@ provider "aws" {
   region = var.aws_region
 }
 
-# Create VPC, subnets, security groups, etc.
-resource "aws_vpc" "kubernetes_vpc" {
+resource "aws_vpc" "main" {
   cidr_block = "10.0.0.0/16"
-  tags = {
-    Name = "kubernetes-vpc"
+}
+
+resource "aws_subnet" "public_1" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = "10.0.1.0/24"
+  availability_zone       = "us-east-1a"
+  map_public_ip_on_launch = true
+}
+
+resource "aws_subnet" "public_2" {
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = "10.0.2.0/24"
+  availability_zone       = "us-east-1b"
+  map_public_ip_on_launch = true
+}
+
+resource "aws_internet_gateway" "gw" {
+  vpc_id = aws_vpc.main.id
+}
+
+resource "aws_route_table" "rt" {
+  vpc_id = aws_vpc.main.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.gw.id
   }
 }
 
-# Create subnets in different AZs for high availability
-resource "aws_subnet" "kubernetes_subnet_az1" {
-  vpc_id            = aws_vpc.kubernetes_vpc.id
-  cidr_block        = "10.0.1.0/24"
-  availability_zone = var.availability_zones[0]
-  tags = {
-    Name = "kubernetes-subnet-az1"
+resource "aws_route_table_association" "a" {
+  subnet_id      = aws_subnet.public_1.id
+  route_table_id = aws_route_table.rt.id
+}
+
+resource "aws_route_table_association" "b" {
+  subnet_id      = aws_subnet.public_2.id
+  route_table_id = aws_route_table.rt.id
+}
+
+resource "aws_security_group" "allow_ssh" {
+  name   = "allow_ssh"
+  vpc_id = aws_vpc.main.id
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
-resource "aws_subnet" "kubernetes_subnet_az2" {
-  vpc_id            = aws_vpc.kubernetes_vpc.id
-  cidr_block        = "10.0.2.0/24"
-  availability_zone = var.availability_zones[1]
+resource "aws_instance" "ansible_controller" {
+  ami                    = "ami-0c02fb55956c7d316"  # Ubuntu 20.04
+  instance_type          = "t2.medium"
+  subnet_id              = aws_subnet.public_1.id
+  key_name               = var.key_name
+  security_groups        = [aws_security_group.allow_ssh.name]
+  associate_public_ip_address = true
+
   tags = {
-    Name = "kubernetes-subnet-az2"
+    Name = "AnsibleController"
   }
 }
 
-# Create security groups, internet gateway, route tables, etc.
-# ...
-
-# Create EC2 instances for Kubernetes master and worker nodes
-resource "aws_instance" "kubernetes_master" {
-  ami           = "ami-0c55b159cbfafe1f0" # Use the latest Amazon Linux 2 AMI
-  instance_type = var.instance_type
-  subnet_id     = aws_subnet.kubernetes_subnet_az1.id
-  key_name      = "your-key-name" # Replace with your SSH key name
-  # Add security groups, IAM roles, etc.
-  tags = {
-    Name = "kubernetes-master"
-  }
-}
-
-resource "aws_instance" "kubernetes_worker_az1" {
-  ami           = "ami-0c55b159cbfafe1f0"
-  instance_type = var.instance_type
-  subnet_id     = aws_subnet.kubernetes_subnet_az1.id
-  key_name      = "your-key-name"
-  tags = {
-    Name = "kubernetes-worker-az1"
-  }
-}
-
-resource "aws_instance" "kubernetes_worker_az2" {
-  ami           = "ami-0c55b159cbfafe1f0"
-  instance_type = var.instance_type
-  subnet_id     = aws_subnet.kubernetes_subnet_az2.id
-  key_name      = "your-key-name"
-  tags = {
-    Name = "kubernetes-worker-az2"
-  }
+resource "aws_s3_bucket" "kops_state_store" {
+  bucket        = "Anu-kops-state-store"
+  force_destroy = true
 }
