@@ -1,4 +1,4 @@
-# 📦 Project 2: Kubernetes Cluster Setup with Terraform + Ansible
+#  Project 2: Kubernetes Cluster Setup with Terraform + Ansible
 
 This project automates the creation of a **highly available Kubernetes cluster** using:
 - **Terraform** for infrastructure provisioning on AWS
@@ -18,7 +18,7 @@ project-2/
     └── delete_cluster.yml    # Deletes Kubernetes cluster via KOPS
 ```
 
-## ⚙️ Tools & Technologies
+##  Tools & Technologies
 - AWS (EC2, S3, Route53)
 - Terraform
 - Ansible
@@ -26,7 +26,7 @@ project-2/
 - kubectl
 - Ubuntu 20.04
 
-## 🚀 How to Deploy
+##  How to Deploy
 1. **Clone this repo** and navigate to `project-2`
 2. **Terraform Setup**:
 ```bash
@@ -61,12 +61,12 @@ ansible-playbook create_cluster.yml
 kubectl get nodes
 ```
 
-## 🧹 How to Delete the Cluster
+##  How to Delete the Cluster
 ```bash
 ansible-playbook delete_cluster.yml
 ```
 
-## ✅ Customization
+##  Customization
 You can update settings in `terraform/variables.tf`, such as:
 - AWS region
 - Availability Zones
@@ -74,7 +74,7 @@ You can update settings in `terraform/variables.tf`, such as:
 - SSH key name
 - Instance size
 
-## 📝 Notes
+##  Notes
 - `KOPS_STATE_STORE` is stored in an S3 bucket and used to manage cluster state.
 - Cluster validation is automatically done after creation.
 - The EC2 instance has IAM permissions to access the S3 bucket directly.
