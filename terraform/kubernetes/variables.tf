@@ -13,6 +13,7 @@ variable "instance_type" {
   description = "EC2 instance type for Kubernetes nodes"
   default     = "t2.medium"
 }
+
 variable "key_name" {
   description = "SSH Key Name"
   default     = "tom.pem"
@@ -20,5 +21,5 @@ variable "key_name" {
 
 variable "dns_zone_name" {
   description = "DNS zone for KOPS cluster"
-  default     = "dev.k8s.local"  # <<< personalize this if needed
+  default     = "dev.k8s.local"
 }

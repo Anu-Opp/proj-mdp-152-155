@@ -1,17 +1,19 @@
-      
 - name: Create Kubernetes Cluster
   hosts: localhost
+  vars:
+    state_store: "s3://anu-kops-state-store"  # <<< personalize this
+    cluster_name: "dev.k8s.local"
   tasks:
     - name: Create cluster
       shell: |
-        export KOPS_STATE_STORE=s3://anu-kops-state-store # <<< personalize bucket name
+        export KOPS_STATE_STORE={{ state_store }}
         kops create cluster \
-          --name dev.k8s.local \
+          --name {{ cluster_name }} \
           --zones us-east-1a,us-east-1b \
           --node-count 2 \
           --node-size t2.medium \
           --master-size t2.medium \
-          --dns-zone=dev.k8s.local \
+          --dns-zone={{ cluster_name }} \
           --yes
 
     - name: Wait for cluster to be ready

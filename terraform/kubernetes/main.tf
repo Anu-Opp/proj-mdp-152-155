@@ -1,5 +1,28 @@
-provider "aws" {
-  region = var.aws_region
+resource "aws_iam_role" "kops_role" {
+  name = "kops-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect = "Allow",
+        Principal = {
+          Service = "ec2.amazonaws.com"
+        },
+        Action = "sts:AssumeRole"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "kops_policy" {
+  role       = aws_iam_role.kops_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+}
+
+resource "aws_iam_instance_profile" "kops_profile" {
+  name = "kops-instance-profile"
+  role = aws_iam_role.kops_role.name
 }
 
 resource "aws_vpc" "main" {
@@ -63,19 +86,24 @@ resource "aws_security_group" "allow_ssh" {
 }
 
 resource "aws_instance" "ansible_controller" {
-  ami                    = "ami-0c02fb55956c7d316"  # Ubuntu 20.04
-  instance_type          = "t2.medium"
-  subnet_id              = aws_subnet.public_1.id
-  key_name               = var.key_name
-  security_groups        = [aws_security_group.allow_ssh.name]
+  ami                         = "ami-0c02fb55956c7d316"
+  instance_type               = "t2.medium"
+  subnet_id                   = aws_subnet.public_1.id
+  key_name                    = var.key_name
+  security_groups             = [aws_security_group.allow_ssh.name]
   associate_public_ip_address = true
+  iam_instance_profile        = aws_iam_instance_profile.kops_profile.name
 
   tags = {
-    Name = "AnsibleController"
+    Name = "ansible-master"
   }
 }
 
 resource "aws_s3_bucket" "kops_state_store" {
-  bucket        = "Anu-kops-state-store"
+  bucket        = "anu-kops-state-store"
   force_destroy = true
+}
+
+resource "aws_route53_zone" "k8s_dns" {
+  name = var.dns_zone_name
 }

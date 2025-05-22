@@ -1,11 +1,7 @@
-output "master_ip" {
-  value = aws_instance.kubernetes_master.public_ip
+output "controller_public_ip" {
+  value = aws_instance.ansible_controller.public_ip
 }
 
-output "worker_az1_ip" {
-  value = aws_instance.kubernetes_worker_az1.public_ip
-}
-
-output "worker_az2_ip" {
-  value = aws_instance.kubernetes_worker_az2.public_ip
+output "dns_zone_name" {
+  value = aws_route53_zone.k8s_dns.name
 }
