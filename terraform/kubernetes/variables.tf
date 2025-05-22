@@ -16,7 +16,7 @@ variable "instance_type" {
 
 variable "key_name" {
   description = "SSH Key Name"
-  default     = "tom.pem"
+  default     = "tom"
 }
 
 variable "dns_zone_name" {

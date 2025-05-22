@@ -1,3 +1,21 @@
+# Project 2 Setup: Terraform + Ansible for Kubernetes Cluster (Personalized Areas Marked)
+
+# File Structure:
+# project-2/
+# ├── terraform/
+# │   ├── main.tf
+# │   ├── variables.tf
+# │   ├── outputs.tf
+# │   └── provider.tf
+# └── ansible/
+#     ├── install_k8s_tools.yml
+#     ├── create_cluster.yml
+#     └── delete_cluster.yml
+# └── README.md
+
+# ---------------------
+# Terraform: main.tf (UPDATED)
+# ---------------------
 resource "aws_iam_role" "kops_role" {
   name = "kops-role"
 
@@ -90,7 +108,7 @@ resource "aws_instance" "ansible_controller" {
   instance_type               = "t2.medium"
   subnet_id                   = aws_subnet.public_1.id
   key_name                    = var.key_name
-  security_groups             = [aws_security_group.allow_ssh.name]
+  vpc_security_group_ids      = [aws_security_group.allow_ssh.id]  # updated line
   associate_public_ip_address = true
   iam_instance_profile        = aws_iam_instance_profile.kops_profile.name
 
@@ -100,7 +118,7 @@ resource "aws_instance" "ansible_controller" {
 }
 
 resource "aws_s3_bucket" "kops_state_store" {
-  bucket        = "anu-kops-state-store"
+  bucket        = "anu-kops-state-store-25"  # updated to ensure uniqueness
   force_destroy = true
 }
 

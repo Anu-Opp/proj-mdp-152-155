@@ -1,7 +1,7 @@
 - name: Delete Kubernetes Cluster
   hosts: localhost
   vars:
-    state_store: "s3://anu-kops-state-store"
+    state_store: "s3://anu-kops-state-store-25"
     cluster_name: "dev.k8s.local"
   tasks:
     - name: Delete Cluster

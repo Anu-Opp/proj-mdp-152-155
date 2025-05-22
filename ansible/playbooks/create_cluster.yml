@@ -1,7 +1,7 @@
 - name: Create Kubernetes Cluster
   hosts: localhost
   vars:
-    state_store: "s3://anu-kops-state-store"  # <<< personalize this
+    state_store: "s3://anu-kops-state-store-25"  # <<< personalize this
     cluster_name: "dev.k8s.local"
   tasks:
     - name: Create cluster
