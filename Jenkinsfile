@@ -44,4 +44,8 @@ pipeline {
     }
 }
 
+echo "// test trigger" >> Jenkinsfile
+git add Jenkinsfile
+git commit -m "Trigger build: update Jenkinsfile"
+git push origin project-3
 //adding this to update the file to initiate a new build 
