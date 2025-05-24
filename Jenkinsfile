@@ -10,7 +10,7 @@ pipeline {
             steps {
                 git branch: 'project-3', 
                     url: 'https://github.com/Anu-Opp/proj-mdp-152-155.git',
-                    credentialsId: 'github-credentials'
+                    credentialsId: 'github-credentials''''
             }
         }
 
@@ -43,9 +43,3 @@ pipeline {
         }
     }
 }
-
-echo "// test trigger" >> Jenkinsfile
-git add Jenkinsfile
-git commit -m "Trigger build: update Jenkinsfile"
-git push origin project-3
-//adding this to update the file to initiate a new build 
