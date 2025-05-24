@@ -8,7 +8,7 @@ metadata:
   creationTimestamp: "2025-05-23T18:30:43Z"
   name: dev.k8s.local
 spec:
-sshKeyName: tom-key
+  sshKeyName: tom-key
   api:
     loadBalancer:
       class: Classic
@@ -65,3 +65,5 @@ sshKeyName: tom-key
       type: Public
     masters: public
     nodes: public
+
+
