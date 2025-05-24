@@ -10,7 +10,7 @@ pipeline {
             steps {
                 git branch: 'project-3', 
                     url: 'https://github.com/Anu-Opp/proj-mdp-152-155.git',
-                    credentialsId: 'github-credentials''''
+                    credentialsId: 'github-credentials'
             }
         }
 
