@@ -16,4 +16,4 @@ spec:
         - name: calculator
           image: anuopp/calculator-app
           ports:
-            - containerPort: 8090
+            - containerPort: 8080
