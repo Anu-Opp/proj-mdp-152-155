@@ -34,3 +34,5 @@ project-2/
   - S3 Bucket for KOPS
   - EC2 for Ansible (Ansible Master)
   - Route53 DNS Zone
+
+w
