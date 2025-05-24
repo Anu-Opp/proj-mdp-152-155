@@ -1,2 +1,2 @@
 
-calculator-k8s-deployment for project 3 
+calculator-k8s-deployment for project-3 
