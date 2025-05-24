@@ -2,14 +2,24 @@ pipeline {
     agent any
 
     environment {
+<<<<<<< HEAD
         DOCKER_IMAGE = 'anuopp/calculator-app' // Change this
         KUBE_CONFIG = credentials('kubeconfig-id') // Add this credential in Jenkins
+=======
+        DOCKER_IMAGE = 'anuopp/calculator-app'
+>>>>>>> d3b0f38 (updated Jenkins file with github credentials)
     }
 
     stages {
         stage('Checkout Code') {
             steps {
+<<<<<<< HEAD
                 git branch: 'project-3', url: 'https://github.com/yourusername/proj-mdp-152-155.git'
+=======
+                git branch: 'project-3', 
+                    url: 'https://github.com/Anu-Opp/proj-mdp-152-155.git',
+                    credentialsId: 'github-credentials'
+>>>>>>> d3b0f38 (updated Jenkins file with github credentials)
             }
         }
 
@@ -42,3 +52,7 @@ pipeline {
         }
     }
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> d3b0f38 (updated Jenkins file with github credentials)
