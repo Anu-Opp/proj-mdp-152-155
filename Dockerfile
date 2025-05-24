@@ -1,7 +1,7 @@
-# Stage 1: Build the WAR file using Maven
+# Stage 1: Build the WAR file
 FROM maven:3.8.1-openjdk-8 AS build
 WORKDIR /app
-COPY . .
+COPY calculator /app
 RUN mvn clean package
 
 # Stage 2: Deploy the WAR on Tomcat
