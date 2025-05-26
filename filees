@@ -1,0 +1,71 @@
+pipeline {
+    agent any
+
+    environment {
+        DOCKER_IMAGE = 'anuopp/calculator-app'
+    }
+
+    stages {
+        stage('Checkout Code') {
+            steps {
+                git(
+                    branch: 'project-3',
+                    url: 'https://github.com/Anu-Opp/proj-mdp-152-155.git',
+                    credentialsId: 'github-credentials'
+                )
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                sh 'docker build -t $DOCKER_IMAGE .'
+            }
+        }
+
+        stage('Push to DockerHub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                    sh '''
+                        echo $PASS | docker login -u $USER --password-stdin
+                        docker push $DOCKER_IMAGE
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                withCredentials([file(credentialsId: 'kubeconfig-id', variable: 'KUBECONFIG')]) {
+                    sh '''
+                        export KUBECONFIG=$KUBECONFIG
+                        kubectl apply -f k8s/deployment.yml
+                        kubectl apply -f k8s/service.yml
+                        kubectl apply -f ingress.yml
+                    '''
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            emailext(
+                subject: "Deployment Success! Job: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """<p><b>Well done Anu!</b></p>
+                         <p>Your deployment job <b>${env.JOB_NAME}</b> build <b>#${env.BUILD_NUMBER}</b> completed successfully.</p>
+                         <p><a href="${env.BUILD_URL}">Click here to view it in Jenkins</a>.</p>""",
+                to: 'anu.op@outlook.com'
+            )
+        }
+        failure {
+            emailext(
+                subject: "Deployment FAILED! Job: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """<p><b>Heads up Anu!</b></p>
+                         <p>Your deployment job <b>${env.JOB_NAME}</b> build <b>#${env.BUILD_NUMBER}</b> has failed.</p>
+                         <p><a href="${env.BUILD_URL}">Click here to troubleshoot</a>.</p>""",
+                to: 'anu.op@outlook.com'
+            )
+        }
+    }
+}
+
